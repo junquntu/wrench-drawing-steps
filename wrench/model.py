@@ -54,6 +54,13 @@ def DIM(step, dkind, **kw):
 DH = (NS[1], -NS[0])                      # 手柄边线方向（+x）
 
 
+
+def _arc_through(c, r, p1, p2, through):
+    """返回 (a0,a1)，使圆弧走经过 through 的那一侧（避免画成大半圈）"""
+    a0, a1, am = ang(c, p1), ang(c, p2), ang(c, through)
+    def ccw(a, b, x): return ((x - a) % 360.0) <= ((b - a) % 360.0)
+    return (a0, a1) if ccw(a0, a1, am) else (a1, a0)
+
 def hpt(side, t):
     """手柄边线上参数 t 处的点（side=+1 上边线，-1 下边线）"""
     return add(mul(NS, C_TOP if side > 0 else C_BOT), DH, t)
@@ -97,9 +104,11 @@ DIM(5, 'lin', p1=O2, p2=C2, off=7.0, text='6')
 P(5, C2, 'C2', (3.0, -4.0))
 
 # ================================================================== 6 开口底圆弧
-A(6, 'mid', C1, R_J1, ang(C1, T1A), ang(C1, T1B), outline=True)
+_a1a, _a1b = _arc_through(C1, R_J1, T1A, T1B, add(C1, U1, -R_J1))
+A(6, 'mid', C1, R_J1, _a1a, _a1b, outline=True)
 DIM(6, 'rad', c=C1, a=214.0, r=R_J1, text='R8', lead=8.0)
-A(6, 'mid', C2, R_J2D, ang(C2, T2A), ang(C2, T2B) + (360.0 if ang(C2, T2B) < ang(C2, T2A) else 0.0), outline=True)
+_a2a, _a2b = _arc_through(C2, R_J2D, T2A, T2B, add(C2, U2, -R_J2D))
+A(6, 'mid', C2, R_J2D, _a2a, _a2b, outline=True)
 DIM(6, 'rad', c=C2, a=160.0, r=R_J2D, text='R14', lead=9.0)
 
 # ================================================================== 7 开口两侧面

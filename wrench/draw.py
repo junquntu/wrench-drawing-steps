@@ -69,7 +69,7 @@ class Canvas:
         if dash is None:
             for i in range(len(P)-1):
                 self._seg(P[i], P[i+1], color, w)
-            if w*self.SS >= 3:      # 圆头，避免折线拐角缺口
+            if w*self.SS >= 3 and len(P) <= 24:      # 圆头，避免折线拐角缺口
                 r = w*self.SS/2.0
                 for q in P[1:-1]:
                     self.d.ellipse([q[0]-r, q[1]-r, q[0]+r, q[1]+r], fill=color)
@@ -95,7 +95,7 @@ class Canvas:
                     rem = pat[idx]
                     on = not on
 
-    def arc(self, c, r, a0, a1, color, w=1.0, dash=None, seg=1.2):
+    def arc(self, c, r, a0, a1, color, w=1.0, dash=None, seg=2.0):
         """角度制，逆时针为正；由 a0 → a1（方向随增量符号）"""
         n = max(6, int(abs(a1-a0)/seg)+1)
         pts = []

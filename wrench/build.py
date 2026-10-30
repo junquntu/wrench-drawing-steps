@@ -86,10 +86,12 @@ def video(path, wav, t0, t1, fps=FPS):
            '-map', '0:v:0', '-map', '1:a:0',
            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '19',
            '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k',
-           '-shortest', '-movflags', '+faststart', path]
+           '-shortest', '-movflags', '+faststart', '-nostats', '-loglevel', 'warning', path]
     log('  ffmpeg frames=%d  %s' % (n, os.path.basename(path)))
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.PIPE)
+    # stderr 写文件而不是 PIPE：否则 ffmpeg 的进度输出会塞满管道，导致互相等待（死锁）
+    logpath = path + '.fflog'
+    logf = open(logpath, 'wb')
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=logf)
     t_start = time.time()
     try:
         for i in range(n):
@@ -107,8 +109,15 @@ def video(path, wav, t0, t1, fps=FPS):
         err = p.stderr.read().decode('utf-8', 'ignore')
         p.wait()
     if p.returncode != 0:
-        log(err[-3000:])
+        try:
+            log(open(logpath, encoding='utf-8', errors='ignore').read()[-3000:])
+        except OSError:
+            pass
         raise SystemExit('ffmpeg failed')
+    try:
+        os.remove(logpath)
+    except OSError:
+        pass
     log('  video ok  %.1fs  %.1f MB' % (time.time()-t_start,
                                        os.path.getsize(path)/1e6))
 
