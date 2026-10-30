@@ -122,10 +122,10 @@ DIM(7, 'lin', p1=add(P2A, U2, 7.0), p2=add(P2B, U2, 7.0), off=0.0, text='14', to
 # ================================================================== 8 R16 外弧
 A(8, 'mid', C2, R_B2, ang(C2, TB1B), ang(C2, P2A), outline=True)
 A(8, 'mid', C2, R_B2, ang(C2, P2B), ang(C2, TB2B), outline=True)
-P(8, Q1, tan=True)
-P(8, Q2, tan=True)
 A(8, 'conn', FB1, RF, ang(FB1, TB1A), ang(FB1, TB1B), outline=True)
 A(8, 'conn', FB2, RF, ang(FB2, TB2A), ang(FB2, TB2B), outline=True)
+P(8, Q1, tan=True)
+P(8, Q2, tan=True)
 DIM(8, 'rad', c=C2, a=250.0, r=R_B2, text='R16', lead=7.0)
 
 # ================================================================== 9 槽端圆心
