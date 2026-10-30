@@ -94,13 +94,13 @@ DIM(3, 'rad', c=O2, a=112.0, r=R_H2, text='R18', lead=8.0)
 # ================================================================== 4 15° 方向线
 L(4, 'axis', add(O1, U1, -19.0), add(O1, U1, 26.0))
 L(4, 'axis', add(O2, U2, -19.0), add(O2, U2, 26.0))
-DIM(4, 'ang', v=O1, a0=0.0, a1=ALPHA, r=17.0, text='15°', tpos=(16.5, -5.5))
-DIM(4, 'ang', v=O2, a0=180.0, a1=180.0 + ALPHA, r=17.0, text='15°', tpos=(-138.0, -13.0))
+DIM(4, 'ang', v=O1, a0=0.0, a1=ALPHA, r=17.0, text='15°', tpos=(24.0, -9.5))
+DIM(4, 'ang', v=O2, a0=180.0, a1=180.0 + ALPHA, r=17.0, text='15°', tpos=(-150.0, -17.0))
 
 # ================================================================== 5 C1 C2
-DIM(5, 'lin', p1=O1, p2=C1, off=7.0, text='4')
+DIM(5, 'lin', p1=O1, p2=C1, off=24.0, text='4')
 P(5, C1, 'C1', (2.6, -4.6))
-DIM(5, 'lin', p1=O2, p2=C2, off=7.0, text='6')
+DIM(5, 'lin', p1=O2, p2=C2, off=26.0, text='6')
 P(5, C2, 'C2', (3.0, -4.0))
 
 # ================================================================== 6 开口底圆弧
@@ -116,8 +116,8 @@ L(7, 'mid', T1A, P1A, outline=True)
 L(7, 'mid', T1B, P1B, outline=True)
 L(7, 'mid', T2A, P2A, outline=True)
 L(7, 'mid', T2B, P2B, outline=True)
-DIM(7, 'lin', p1=add(P1A, U1, 3.0), p2=add(P1B, U1, 3.0), off=0.0, text='12')
-DIM(7, 'lin', p1=add(P2A, U2, 3.0), p2=add(P2B, U2, 3.0), off=0.0, text='14')
+DIM(7, 'lin', p1=add(P1A, U1, 7.0), p2=add(P1B, U1, 7.0), off=0.0, text='12', toff=(-16.0, 9.0))
+DIM(7, 'lin', p1=add(P2A, U2, 7.0), p2=add(P2B, U2, 7.0), off=0.0, text='14', toff=(16.0, 9.0))
 
 # ================================================================== 8 R16 外弧
 A(8, 'mid', C2, R_B2, ang(C2, TB1B), ang(C2, P2A), outline=True)
@@ -139,6 +139,8 @@ A(10, 'conn', S1, RS1, 90.0, -90.0, outline=True)
 A(10, 'conn', S2, RS2, 90.0, 270.0, outline=True)
 L(10, 'conn', K1A, K2A, outline=True)
 L(10, 'conn', K1B, K2B, outline=True)
+DIM(10, 'rad', c=S1, a=122.0, r=RS1, text='R4', lead=8.0)
+DIM(10, 'rad', c=S2, a=258.0, r=RS2, text='R5', lead=9.0)
 
 # ================================================================== 11 手柄两侧
 _tA0, _tA1 = -106.0, -11.0
@@ -159,6 +161,7 @@ ENT.pop()
 _aux12 = L(12, 'aux', add(hpt(+1, -34.0), NS, RF), add(hpt(+1, -6.0), NS, RF),
            erase=dict(step=14, u0=0.0, u1=1.0))
 P(12, F1A, 'F1', (0.0, 3.2))
+DIM(12, 'rad', c=F1A, a=96.0, r=RF, text='R5', lead=4.0)
 A(12, 'conn', F1A, RF, ang(F1A, T_F1A), ang(F1A, T_L1A), outline=True)
 A(12, 'aux', O1, R_H1 + RF, ang(O1, F1B) - 12.0, ang(O1, F1B) + 26.0)
 _aux12b = L(12, 'aux', add(hpt(-1, -34.0), NS, -RF), add(hpt(-1, -6.0), NS, -RF),
@@ -171,6 +174,7 @@ A(13, 'aux', O2, R_H2 + RF, ang(O2, F2A) - 26.0, ang(O2, F2A) + 12.0)
 _aux13 = L(13, 'aux', add(hpt(+1, -114.0), NS, RF), add(hpt(+1, -86.0), NS, RF),
            erase=dict(step=14, u0=0.0, u1=1.0))
 P(13, F2A, 'F3', (0.0, 3.2))
+DIM(13, 'rad', c=F2A, a=106.0, r=RF, text='R5', lead=5.0)
 A(13, 'conn', F2A, RF, ang(F2A, T_F2A), ang(F2A, T_L2A), outline=True)
 A(13, 'aux', O2, R_H2 + RF, ang(O2, F2B) - 12.0, ang(O2, F2B) + 26.0)
 _aux13b = L(13, 'aux', add(hpt(-1, -114.0), NS, -RF), add(hpt(-1, -86.0), NS, -RF),
