@@ -8,8 +8,8 @@ from model import ENT, CAT, LW, DASH, STEPS, build, INTRO_DUR, OUTRO_DUR
 
 W, H = 1920, 1080
 SS = 2
-SC = 7.0
-OX, OY = 1120.0, 566.0
+SC = 7.4
+OX, OY = 1160.0, 560.0
 PANEL = (1332, 118, 1888, 1012)
 INK = (32, 38, 46)
 GREY = (118, 128, 142)
@@ -52,7 +52,7 @@ def in_ang(a, r0, r1):
 
 def _alpha_arc(ent, a, t):
     for r, t0, d in FADE.get(id(ent), []):
-        if in_ang(a, r['a0'], r['a1']):
+        if 'a0' in r and in_ang(a, r['a0'], r['a1']):
             return 1.0 - ease(clamp01((t-t0)/d))
     return 1.0
 
@@ -78,6 +78,8 @@ def split_line(p1, p2, ent, t):
         return [(p1, p2, 1.0)]
     cuts, info = {0.0, 1.0}, []
     for r, t0, d in lst:
+        if 'u0' not in r:
+            continue
         u0, u1 = max(0.0, r['u0']), min(1.0, r['u1'])
         info.append((u0, u1, 1.0 - ease(clamp01((t-t0)/d))))
         cuts.update([u0, u1])
@@ -136,11 +138,12 @@ def draw_point(cv, e, color, p):
         a = clamp01((p-0.30)/0.5)
         lp = (q[0]+e['lp'][0], q[1]+e['lp'][1])
         anc = 'lm' if e['lp'][0] > 0 else ('rm' if e['lp'][0] < 0 else 'mm')
-        cv.text(lp, e['label'], 4.3, mix(BG, color, a), anchor=anc, bold=True,
+        cv.text(lp, e['label'], 3.7*SC, mix(BG, color, a), anchor=anc, bold=True,
                 halo=BG if a < 0.98 else None)
 
 
-def draw_dim(cv, e, color, p, tsize=4.0):
+def draw_dim(cv, e, color, p, tsize=None):
+    tsize = tsize or 3.6*SC
     if p <= 0:
         return
     k = e['dkind']
@@ -167,12 +170,11 @@ def draw_dim(cv, e, color, p, tsize=4.0):
         if small:
             a1 = add(q1, d, -2.4)
             a2 = add(q2, d, 2.4)
-            cv.polyline([add(a1, sub(mid, a1), ease_out(pl)),
-                         add(a2, sub(mid, a2), ease_out(pl))], color, 0.42)
+            k = ease_out(pl)
+            cv.polyline([add(mid, sub(a1, mid), k), add(mid, sub(a2, mid), k)], color, 0.42)
         else:
-            h1 = (q1[0]+(mid[0]-q1[0])*ease_out(pl), q1[1]+(mid[1]-q1[1])*ease_out(pl))
-            h2 = (q2[0]+(mid[0]-q2[0])*ease_out(pl), q2[1]+(mid[1]-q2[1])*ease_out(pl))
-            cv.polyline([h1, h2], color, 0.42)
+            k = ease_out(pl)
+            cv.polyline([add(mid, sub(q1, mid), k), add(mid, sub(q2, mid), k)], color, 0.42)
         if p < 0.62:
             return
         pa = clamp01((p-0.62)/0.16)
@@ -193,7 +195,10 @@ def draw_dim(cv, e, color, p, tsize=4.0):
             rot -= 180
         if rot < -90:
             rot += 180
-        tpos = add(mid, nrm, (2.2 if off >= 0 else -2.2) if not small else 3.0)
+        if 'toff' in e:
+            tpos = add(mid, e['toff'])
+        else:
+            tpos = add(mid, nrm, (2.2 if off >= 0 else -2.2) if not small else 3.0)
         col = mix(BG, color, ease_out(pt))
         if abs(rot) < 1:
             cv.text(tpos, e['text'], tsize, col, anchor='mm', halo=BG)
@@ -233,7 +238,7 @@ def draw_dim(cv, e, color, p, tsize=4.0):
         if p > 0.74:
             pt = clamp01((p-0.74)/0.26)
             am = (a0+a1)/2.0
-            tp = cv.arc_pt(v, r+4.6, am)
+            tp = e.get('tpos') or cv.arc_pt(v, r+4.6, am)
             cv.text(tp, e['text'], tsize, mix(BG, color, ease_out(pt)), anchor='mm', halo=BG)
 
 
@@ -289,6 +294,9 @@ def draw_entities(cv, t, cur_step):
 # ------------------------------------------------------------------ 版式
 def draw_sheet(cv):
     cv.d.rectangle([0, 0, W*SS, H*SS], fill=BG)
+    # 图框（双线）
+    cv.rect_px(26, 112, 1310, 1006, outline=(176, 186, 198), w=1.6)
+    cv.rect_px(33, 119, 1303, 999, outline=(206, 214, 224), w=0.8)
     cv.d.rectangle([0, 0, W*SS, 104*SS], fill=(248, 250, 253))
     cv.d.line([(0, 104*SS), (W*SS, 104*SS)], fill=LINE, width=2*SS)
     for gx in range(-150, 40, 10):
@@ -357,24 +365,26 @@ def draw_panel(cv, step, t):
     meta = STEPS[step-1]
     x = x0+26
     wd = (x1-x0)-52
-    cv.text_px(x, y0+14, '%02d' % step, 40, ACC, bold=True)
-    cv.text_px(x+66, y0+20, meta['name'], 20.5, INK, bold=True)
-    cv.text_px(x+66, y0+52, '第 %d 步 / 共 %d 步' % (step, len(STEPS)), 12.2, LGREY)
-    y = y0+92
-    cv.text_px(x, y, '本 步 操 作', 13.2, ACC, bold=True)
-    cv.d.line([(x*SS, (y+21)*SS), ((x+52)*SS, (y+21)*SS)], fill=ACC, width=2*SS)
-    y = block(cv, x, y+34, wd, meta['bullets'], 14.4, INK, 1.64, bullet='·')
-    yb = max(y+8, y0+386)
-    cv.d.line([(x*SS, yb*SS), ((x1-26)*SS, yb*SS)], fill=LINE, width=2*SS)
-    cv.text_px(x, yb+12, '作 图 要 点', 13.2, BLUE, bold=True)
-    block(cv, x, yb+42, wd, meta['notes'], 13.4, (62, 72, 86), 1.60)
-    yl = y1-296
+    cv.text_px(x, y0+12, '%02d' % step, 38, ACC, bold=True)
+    cv.text_px(x+64, y0+18, meta['name'], 19.5, INK, bold=True)
+    cv.text_px(x+64, y0+48, '第 %d 步 / 共 %d 步' % (step, len(STEPS)), 12.0, LGREY)
+    cv.d.line([(x*SS, (y0+74)*SS), ((x1-26)*SS, (y0+74)*SS)], fill=LINE, width=2*SS)
+    y = y0+88
+    cv.text_px(x, y, '本 步 操 作', 13.0, ACC, bold=True)
+    cv.d.line([(x*SS, (y+20)*SS), ((x+50)*SS, (y+20)*SS)], fill=ACC, width=2*SS)
+    y = block(cv, x, y+32, wd, meta['bullets'], 14.0, INK, 1.62, bullet='·')
+    yb = max(y+12, y0+256)
+    cv.d.line([(x*SS, (yb-8)*SS), ((x1-26)*SS, (yb-8)*SS)], fill=LINE, width=2*SS)
+    cv.text_px(x, yb+6, '作 图 要 点', 13.0, BLUE, bold=True)
+    block(cv, x, yb+34, wd, meta['notes'], 13.2, (62, 72, 86), 1.58)
+    # 图例
+    yl = y0+428
     cv.d.line([(x*SS, yl*SS), ((x1-26)*SS, yl*SS)], fill=LINE, width=2*SS)
-    cv.text_px(x, yl+10, '图 例', 12.2, GREY, bold=True)
+    cv.text_px(x, yl+10, '图 例', 12.0, GREY, bold=True)
     items = [('axis', '基准线（细点画线）'), ('known', '已知线段'), ('mid', '中间线段'),
              ('conn', '连接线段'), ('aux', '作图辅助线')]
     for k, (c, txt) in enumerate(items):
-        yy = yl+36+k*22
+        yy = yl+36+k*21
         p1 = ((x-OX)/SC, (OY-yy)/SC)
         p2 = ((x+34-OX)/SC, (OY-yy)/SC)
         if c == 'axis':
@@ -383,19 +393,20 @@ def draw_panel(cv, step, t):
             cv.polyline([p1, p2], CAT[c], 0.9, DASH['aux'])
         else:
             cv.polyline([p1, p2], CAT[c], 1.9)
-        cv.text_px(x+44, yy-7.5, txt, 12.0, (72, 82, 94))
-    yp = y1-158
+        cv.text_px(x+44, yy-7.5, txt, 11.8, (72, 82, 94))
+    # 进度
+    yp = y0+572
     cv.d.line([(x*SS, yp*SS), ((x1-26)*SS, yp*SS)], fill=LINE, width=2*SS)
-    cv.text_px(x, yp+8, '进 度', 12.2, GREY, bold=True)
+    cv.text_px(x, yp+8, '进 度', 12.0, GREY, bold=True)
     for k, st in enumerate(STEPS):
-        yy = yp+32+k*18.0
+        yy = yp+32+k*18.4
         cur = (k+1 == step)
         done = (k+1 < step)
         if cur:
             cv.rect_px(x-8, yy-3, x1-18, yy+15, fill=(253, 240, 232), radius=4)
         col = ACC if cur else ((110, 122, 138) if done else (186, 193, 203))
-        cv.text_px(x, yy, '%02d' % (k+1), 10.4, col, bold=cur)
-        cv.text_px(x+26, yy, st['short'], 11.4,
+        cv.text_px(x, yy, '%02d' % (k+1), 10.2, col, bold=cur)
+        cv.text_px(x+25, yy, st['short'], 11.2,
                    (44, 52, 62) if (cur or done) else (158, 166, 176), bold=cur)
 
 
@@ -493,6 +504,9 @@ def draw_outro(cv, t):
     draw_sheet(cv)
     cv.set_mm(OX, OY, SC)
     draw_final_figure(cv, t, alpha=1.0)
+    for e in ENT:
+        if e['kind'] == 'DIM':
+            draw_dim(cv, e, (96, 104, 118), 1.0)
     draw_header(cv, None, t)
     a = ease(clamp01(t/1.2))
     cv.text_px(1360, 146, '作 图 完 成', 30, mix(BG, ACC, a), bold=True)

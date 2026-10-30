@@ -52,7 +52,7 @@ def stroke(dur=0.4, amp=0.05):
     return amp*noise*e*3.0
 
 
-def pad(total, amp=0.055):
+def pad(total, amp=0.085):
     n = int(total*SR)
     out = np.zeros(n)
     chords = [(110.0, 164.81, 220.0), (98.0, 146.83, 196.0),
@@ -122,7 +122,7 @@ def build(sched, total, path, preview=False):
     mix = np.stack([L, R], axis=1)
     peak = np.abs(mix).max()
     if peak > 0:
-        mix = mix/peak*0.72
+        mix = mix/peak*0.86
     # 首尾淡入淡出
     f = int(1.2*SR)
     mix[:f] *= np.linspace(0, 1, f)[:, None]

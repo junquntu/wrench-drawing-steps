@@ -29,7 +29,8 @@ R_H1   = 14.0      # 右端头外圆
 R_H2   = 18.0      # 左端头外圆
 R_B2   = 16.0      # 左端头开口侧外弧（与开口底同心）
 R_J1   = 8.0       # 右开口底
-R_J2   = 14.0      # 左开口底
+R_J2   = 14.0      # 左开口底（图样标注）
+R_J2D  = 7.0       # 左开口底实际作图半径（=14/2，与两侧面相切）
 W1     = 12.0      # 右开口宽
 W2     = 14.0      # 左开口宽
 A1     = 4.0       # 右开口底圆心距 O1
@@ -53,16 +54,19 @@ C2 = add(O2, U2, A2)
 
 # ------------------------------------------------------------------ 右开口（宽 12，底 R8）
 H1 = W1/2.0
-T1A = add(C1, N,  H1)
-T1B = add(C1, N, -H1)
+# 开口侧面与开口底弧 R8 的交点（弦宽 12，弧半径 8 → 半角 asin(6/8)）
+_u1 = math.sqrt(R_J1**2 - H1**2)
+T1A = add(add(C1, N,  H1), U1, -_u1)
+T1B = add(add(C1, N, -H1), U1, -_u1)
 _t1 = math.sqrt(R_H1**2 - H1**2) - A1
 P1A = add(add(C1, N, H1), U1, _t1)
 P1B = add(add(C1, N, -H1), U1, _t1)
 
 # ------------------------------------------------------------------ 左开口（宽 14，底 R14）
 H2 = W2/2.0
-T2A = add(C2, N,  H2)
-T2B = add(C2, N, -H2)
+_u2 = math.sqrt(R_J2D**2 - H2**2)
+T2A = add(add(C2, N,  H2), U2, -_u2)
+T2B = add(add(C2, N, -H2), U2, -_u2)
 _t2 = math.sqrt(R_B2**2 - H2**2)
 P2A = add(add(C2, N, H2), U2, _t2)
 P2B = add(add(C2, N, -H2), U2, _t2)
@@ -130,6 +134,26 @@ T_L1A = _tan_on_line(F1A, NS, C_TOP)
 T_L1B = _tan_on_line(F1B, NS, C_BOT)
 T_L2A = _tan_on_line(F2A, NS, C_TOP)
 T_L2B = _tan_on_line(F2B, NS, C_BOT)
+
+
+# ------------------------------------------------------------------ R18 与 R16 之间的 R5 过渡圆角
+def _cc(c1, r1, c2, r2, pick_upper=True):
+    d = dist(c1, c2)
+    a = (d*d + r1*r1 - r2*r2) / (2*d)
+    h = math.sqrt(max(r1*r1 - a*a, 0.0))
+    f = add(c1, norm(sub(c2, c1)), a)
+    n = perp(norm(sub(c2, c1)))
+    p1 = add(f, n, h); p2 = add(f, n, -h)
+    if pick_upper:
+        return p1 if p1[1] > p2[1] else p2
+    return p2 if p1[1] > p2[1] else p1
+
+FB1 = _cc(O2, R_H2-RF, C2, R_B2-RF, True)     # 上侧过渡圆心
+FB2 = _cc(O2, R_H2-RF, C2, R_B2-RF, False)    # 下侧过渡圆心
+TB1A = add(O2, norm(sub(FB1, O2)), R_H2)      # 与 R18 的切点（上）
+TB1B = add(C2, norm(sub(FB1, C2)), R_B2)      # 与 R16 的切点（上）
+TB2A = add(O2, norm(sub(FB2, O2)), R_H2)      # 与 R18 的切点（下）
+TB2B = add(C2, norm(sub(FB2, C2)), R_B2)      # 与 R16 的切点（下）
 
 def sweep(a0, a1, ccw=True):
     d = (a1 - a0) % 360.0
