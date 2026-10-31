@@ -169,3 +169,25 @@ if __name__ == '__main__':
                  ('T_L1A', T_L1A), ('T_L2A', T_L2A)]:
         print('%-6s' % n, '(%.3f, %.3f)' % v)
     print('len', P1A[0] - (O2[0] - R_H2))
+
+# ---------------- 3 方案：R16 弧与开口下侧面相交，交点即羊角 ----------------
+_dir16 = norm(add(mul(U2, 1.0), mul(N, -0.55)))     # 左下方向
+C16 = add(O2, _dir16, R_H2 - R_B2)                   # 距 O2 = R18-R16 = 2
+
+def _circ_line_pts(c, r, n, cc):
+    d = cc - (n[0]*c[0] + n[1]*c[1])
+    h = math.sqrt(max(r*r - d*d, 0.0))
+    f = add(c, n, d); q = perp(n)
+    return [add(f, q, h), add(f, q, -h)]
+
+# 下侧面所在直线：n·x = N·C2 - H2
+_c_face = N[0]*C2[0] + N[1]*C2[1] - H2
+_Hc = _circ_line_pts(C16, R_B2, N, _c_face)
+HORN = max(_Hc, key=lambda p: dist(p, O2))           # 外侧那个交点
+P2B = HORN
+
+# R5 圆角：距 C16 = 16+5，且在手柄下侧线外移 5 的线上
+_Fc = _circ_line_pts(C16, R_B2 + RF, NS, C_BOT - RF)
+F16 = max(_Fc, key=lambda p: p[0])
+T16A = add(C16, norm(sub(F16, C16)), R_B2)
+T16B = _tan_on_line(F16, NS, C_BOT)

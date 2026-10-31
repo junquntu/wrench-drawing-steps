@@ -120,13 +120,12 @@ DIM(7, 'lin', p1=add(P1A, U1, 7.0), p2=add(P1B, U1, 7.0), off=0.0, text='12', to
 DIM(7, 'lin', p1=add(P2A, U2, 7.0), p2=add(P2B, U2, 7.0), off=0.0, text='14', toff=(16.0, 9.0))
 
 # ================================================================== 8 R16 外弧
-A(8, 'mid', C2, R_B2, ang(C2, TB1B), ang(C2, P2A), outline=True)
-A(8, 'mid', C2, R_B2, ang(C2, P2B), ang(C2, TB2B), outline=True)
-A(8, 'conn', FB1, RF, ang(FB1, TB1A), ang(FB1, TB1B), outline=True)
-A(8, 'conn', FB2, RF, ang(FB2, TB2A), ang(FB2, TB2B), outline=True)
+_a16a, _a16b = _arc_through(C16, R_B2, HORN, T16A, add(C16, norm(sub(C16, O2)), R_B2))
+A(8, 'mid', C16, R_B2, _a16a, _a16b, outline=True)
+A(8, 'conn', F16, RF, ang(F16, T16A), ang(F16, T16B), outline=True)
 P(8, Q1, tan=True)
 P(8, Q2, tan=True)
-DIM(8, 'rad', c=C2, a=250.0, r=R_B2, text='R16', lead=7.0)
+DIM(8, 'rad', c=C16, a=250.0, r=R_B2, text='R16', lead=7.0)
 
 # ================================================================== 9 槽端圆心
 L(9, 'aux', (-60, -17), (-60, 17))
