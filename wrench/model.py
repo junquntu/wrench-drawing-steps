@@ -84,12 +84,14 @@ A(2, 'known', O1, R_H1, 0.0, 360.0, outline=True,
   erase=[dict(step=14, a0=ang(O1, P1B), a1=ang(O1, P1A) + 360.0),
          dict(step=14, a0=ang(O1, T_F1A), a1=ang(O1, T_F1B))])
 DIM(2, 'rad', c=O1, a=128.0, r=R_H1, text='R14', lead=8.0)
+DIM(2, 'rad', c=O1, a=196.0, r=R_H1, text='R5', lead=6.0)
 
 # ================================================================== 3 R18
 A(3, 'known', O2, R_H2, 0.0, 360.0, outline=True,
   erase=[dict(step=14, a0=ang(O2, TB1A), a1=ang(O2, TB2A)),
          dict(step=14, a0=ang(O2, T_F2B), a1=ang(O2, T_F2A))])
 DIM(3, 'rad', c=O2, a=112.0, r=R_H2, text='R18', lead=8.0)
+DIM(3, 'rad', c=O2, a=196.0, r=R_H2, text='R5', lead=6.0)
 
 # ================================================================== 4 15° 方向线
 L(4, 'axis', add(O1, U1, -19.0), add(O1, U1, 26.0))

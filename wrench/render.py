@@ -203,7 +203,7 @@ def draw_dim(cv, e, color, p, tsize=None):
         if abs(rot) < 1:
             cv.text(tpos, e['text'], tsize, col, anchor='mm', halo=BG)
         else:
-            cv.text_rot(tpos, e['text'], tsize, col, rot=rot, halo=BG)
+            cv.text_rot(tpos, e['text'], tsize, col, rot=0.0, halo=BG)
     elif k == 'rad':
         c, a, r, lead = e['c'], e['a'], e['r'], e.get('lead', 7.0)
         tip = cv.arc_pt(c, r, a)
@@ -225,7 +225,7 @@ def draw_dim(cv, e, color, p, tsize=None):
             if abs(rot) < 1:
                 cv.text(tp, e['text'], tsize, col, anchor='mm', halo=BG)
             else:
-                cv.text_rot(tp, e['text'], tsize, col, rot=rot, halo=BG)
+                cv.text_rot(tp, e['text'], tsize, col, rot=0.0, halo=BG)
     elif k == 'ang':
         v, a0, a1, r = e['v'], e['a0'], e['a1'], e['r']
         pa = clamp01(p/0.58)
