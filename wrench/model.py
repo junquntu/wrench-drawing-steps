@@ -83,15 +83,15 @@ DIM(1, 'lin', p1=(0, 0), p2=(-120, 0), off=-36.0, text='120')
 A(2, 'known', O1, R_H1, 0.0, 360.0, outline=True,
   erase=[dict(step=14, a0=ang(O1, P1B), a1=ang(O1, P1A) + 360.0),
          dict(step=14, a0=ang(O1, T_F1A), a1=ang(O1, T_F1B))])
-DIM(2, 'rad', c=O1, a=128.0, r=R_H1, text='R14', lead=8.0)
-DIM(2, 'rad', c=O1, a=196.0, r=R_H1, text='R5', lead=6.0)
+DIM(2, 'rad', c=O1, a=108.0, r=R_H1, text='R14', lead=11.0)
+DIM(2, 'rad', c=O1, a=212.0, r=R_H1, text='R5', lead=6.0)
 
 # ================================================================== 3 R18
 A(3, 'known', O2, R_H2, 0.0, 360.0, outline=True,
   erase=[dict(step=14, a0=ang(O2, TB1A), a1=ang(O2, TB2A)),
          dict(step=14, a0=ang(O2, T_F2B), a1=ang(O2, T_F2A))])
-DIM(3, 'rad', c=O2, a=112.0, r=R_H2, text='R18', lead=8.0)
-DIM(3, 'rad', c=O2, a=196.0, r=R_H2, text='R5', lead=6.0)
+DIM(3, 'rad', c=O2, a=92.0, r=R_H2, text='R18', lead=13.0)
+DIM(3, 'rad', c=O2, a=214.0, r=R_H2, text='R5', lead=6.0)
 
 # ================================================================== 4 15° 方向线
 L(4, 'axis', add(O1, U1, -19.0), add(O1, U1, 26.0))
@@ -102,24 +102,24 @@ DIM(4, 'ang', v=O2, a0=180.0, a1=180.0 + ALPHA, r=17.0, text='15°', tpos=(-150.
 # ================================================================== 5 C1 C2
 DIM(5, 'lin', p1=O1, p2=C1, off=24.0, text='4')
 P(5, C1, 'C1', (2.6, -4.6))
-DIM(5, 'lin', p1=O2, p2=C2, off=26.0, text='6')
+DIM(5, 'lin', p1=O2, p2=C2, off=32.0, text='6')
 P(5, C2, 'C2', (3.0, -4.0))
 
 # ================================================================== 6 开口底圆弧
 _a1a, _a1b = _arc_through(C1, R_J1, T1A, T1B, add(C1, U1, -R_J1))
 A(6, 'mid', C1, R_J1, _a1a, _a1b, outline=True)
-DIM(6, 'rad', c=C1, a=214.0, r=R_J1, text='R8', lead=8.0)
+DIM(6, 'rad', c=C1, a=228.0, r=R_J1, text='R8', lead=9.0)
 _a2a, _a2b = _arc_through(C2, R_J2D, T2A, T2B, add(C2, U2, -R_J2D))
 A(6, 'mid', C2, R_J2D, _a2a, _a2b, outline=True)
-DIM(6, 'rad', c=C2, a=160.0, r=R_J2D, text='R14', lead=9.0)
+DIM(6, 'rad', c=C2, a=238.0, r=R_J2D, text='R14', lead=13.0)
 
 # ================================================================== 7 开口两侧面
 L(7, 'mid', T1A, P1A, outline=True)
 L(7, 'mid', T1B, P1B, outline=True)
 L(7, 'mid', T2A, P2A, outline=True)
 L(7, 'mid', T2B, P2B, outline=True)
-DIM(7, 'lin', p1=add(P1A, U1, 7.0), p2=add(P1B, U1, 7.0), off=0.0, text='12', toff=(-16.0, 9.0))
-DIM(7, 'lin', p1=add(P2A, U2, 7.0), p2=add(P2B, U2, 7.0), off=0.0, text='14', toff=(16.0, 9.0))
+DIM(7, 'lin', p1=add(P1A, U1, 7.0), p2=add(P1B, U1, 7.0), off=0.0, text='12', toff=(0.0, 12.0))
+DIM(7, 'lin', p1=add(P2A, U2, 7.0), p2=add(P2B, U2, 7.0), off=0.0, text='14', toff=(-9.0, 11.0))
 
 # ================================================================== 8 R16 外弧
 _a16a, _a16b = _arc_through(C16, R_B2, HORN, T16A, add(C16, norm(sub(C16, O2)), R_B2))
@@ -127,7 +127,7 @@ A(8, 'mid', C16, R_B2, _a16a, _a16b, outline=True)
 A(8, 'conn', F16, RF, ang(F16, T16A), ang(F16, T16B), outline=True)
 P(8, Q1, tan=True)
 P(8, Q2, tan=True)
-DIM(8, 'rad', c=C16, a=250.0, r=R_B2, text='R16', lead=7.0)
+DIM(8, 'rad', c=C16, a=262.0, r=R_B2, text='R16', lead=8.0)
 
 # ================================================================== 9 槽端圆心
 L(9, 'aux', (-60, -17), (-60, 17))
