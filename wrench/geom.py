@@ -83,7 +83,7 @@ Q2 = add(_foot, N, -_h)
 S1 = (-L_CC/2 + SLOT_L/2, 0.0)
 S2 = (-L_CC/2 - SLOT_L/2, 0.0)
 _sl = (RS2-RS1)/(S1[0]-S2[0])
-NS = (-_sl, math.sqrt(1 - _sl*_sl))
+NS = (0.0, 1.0)      # 槽/手柄一律与轴线平行（不再有 0.77° 倾斜）
 K1A = add(S1, NS,  RS1)
 K2A = add(S2, NS,  RS2)
 K1B = add(S1, NS, -RS1)
@@ -92,8 +92,8 @@ G1A = add(S1, NS,  RS1+WALL)
 G2A = add(S2, NS,  RS2+WALL)
 G1B = add(S1, NS, -(RS1+WALL))
 G2B = add(S2, NS, -(RS2+WALL))
-C_TOP = NS[0]*G1A[0] + NS[1]*G1A[1]
-C_BOT = NS[0]*G1B[0] + NS[1]*G1B[1]
+C_TOP = RS1 + WALL
+C_BOT = -(RS1 + WALL)
 
 # ------------------------------------------------------------------ 过渡圆角 R5（4 处）
 def _fillet_center(O, R, side):
