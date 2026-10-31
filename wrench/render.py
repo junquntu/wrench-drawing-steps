@@ -203,19 +203,21 @@ def draw_dim(cv, e, color, p, tsize=None):
         if abs(rot) < 1:
             cv.text(tpos, e['text'], tsize, col, anchor='mm', halo=BG)
         else:
-            cv.text_rot(tpos, e['text'], tsize, col, rot=0.0, halo=BG)
+            cv.text_rot(tpos, e['text'], tsize, col, rot=rot, halo=BG)
     elif k == 'rad':
         c, a, r, lead = e['c'], e['a'], e['r'], e.get('lead', 7.0)
         tip = cv.arc_pt(c, r, a)
         dv = (math.cos(rad(a)), math.sin(rad(a)))
         p1 = clamp01(p/0.55)
-        s = add(c, dv, 1.0)
-        cv.polyline([s, add(s, sub(tip, s), ease_out(p1))], color, 0.42)
-        if p > 0.5:
-            cv.arrow(tip, a, 2.4*clamp01((p-0.5)/0.18), color)
+        L = lead*0.5 + 3.0
+        s0 = add(tip, dv, 0.6)
+        s1 = add(tip, dv, L)
+        cv.polyline([s0, add(s0, sub(s1, s0), ease_out(p1))], color, 0.42)
+        if p > 0.45:
+            cv.arrow(tip, a + 180.0, 2.4*clamp01((p-0.45)/0.18), color)
         if p > 0.68:
             pt = clamp01((p-0.68)/0.32)
-            tp = add(tip, dv, lead*0.5+2.4)
+            tp = add(tip, dv, L + 3.2)
             rot = -a
             while rot > 90:
                 rot -= 180
@@ -225,7 +227,7 @@ def draw_dim(cv, e, color, p, tsize=None):
             if abs(rot) < 1:
                 cv.text(tp, e['text'], tsize, col, anchor='mm', halo=BG)
             else:
-                cv.text_rot(tp, e['text'], tsize, col, rot=0.0, halo=BG)
+                cv.text_rot(tp, e['text'], tsize, col, rot=rot, halo=BG)
     elif k == 'ang':
         v, a0, a1, r = e['v'], e['a0'], e['a1'], e['r']
         pa = clamp01(p/0.58)
